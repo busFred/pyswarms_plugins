@@ -41,9 +41,9 @@ class GeneralOptimizerPSOOptions(PSOOptions):
         r (int): the range of the VonNeumann topology.  This is used to determine the number of neighbours in the topology.
     """
 
-    k: Optional[int] = dataclass.field(default=None, init=True)
-    p: Optional[int] = dataclass.field(default=None, init=True)
-    r: Optional[int] = dataclass.field(default=None, init=True)
+    k: Optional[int] = dataclasses.field(default=None, init=True)
+    p: Optional[int] = dataclasses.field(default=None, init=True)
+    r: Optional[int] = dataclasses.field(default=None, init=True)
 
     def create_options_dict(self) -> Dict[str, Union[float, int]]:
         """Create options dictionary for upstream library.
