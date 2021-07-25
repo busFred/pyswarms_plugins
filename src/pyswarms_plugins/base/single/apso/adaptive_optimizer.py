@@ -244,7 +244,7 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         return (final_best_cost, final_best_pos)
 
     def reset(self):
-        self.reset()
+        super().reset()
         self.state = EvolutionState.S1_EXPLORATION
 
     def __perform_ese(self):
@@ -278,9 +278,7 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         """
         min_mean_dist: float = np.min(mean_distances)
         max_mean_dist: float = np.max(mean_distances)
-        gbest_idx: int = np.argwhere(
-            np.all(self.swarm.position == self.swarm.best_pos,
-                   axis=1))[0].item()
+        gbest_idx: int = np.argmin(self.swarm.current_cost)
         gbest_mean_dist: float = mean_distances[gbest_idx]
         evo_factor = (gbest_mean_dist - min_mean_dist) / (max_mean_dist -
                                                           min_mean_dist)
@@ -359,13 +357,12 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         sigma = self.__compute_sigma(curr_iter=curr_iter, max_iter=max_iter)
         mod_pos[mod_dim] = mod_pos[mod_dim] + (
             x_max_d - x_min_d) * np.random.normal(loc=0.0, scale=sigma)
-        mod_pos = self.bh(position=mod_pos, bounds=self.bounds)
+        mod_pos = self.bh(position=np.expand_dims(a=mod_pos, axis=0),
+                          bounds=self.bounds)[0]
         mod_pos_cost: float = objective_func(np.expand_dims(a=mod_pos,
                                                             axis=0))[0]
         if mod_pos_cost < self.swarm.best_cost:
-            best_idx: int = np.argwhere(
-                np.all(self.swarm.position == self.swarm.best_pos,
-                       axis=1))[0].item()
+            best_idx: int = np.argmin(self.swarm.current_cost)
             self.swarm.best_cost = mod_pos_cost
             self.swarm.best_pos = mod_pos
             self.swarm.current_cost[best_idx] = mod_pos_cost
