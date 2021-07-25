@@ -37,81 +37,21 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         ftol_iter: int = 1,
         init_pos: Optional[np.ndarray] = None,
     ):
-        """Initialize the swarm
+        """Adaptive Particle Swarm Optimization.
 
-        Attributes
-        ----------
-        n_particles : int
-            number of particles in the swarm.
-        dimensions : int
-            number of dimensions in the space.
-        options : dict with keys :code:`{'c1', 'c2', 'w'}` or :code:`{'c1', 'c2', 'w', 'k', 'p'}`
-            a dictionary containing the parameters for the specific
-            optimization technique.
-                * c1 : float
-                    cognitive parameter
-                * c2 : float
-                    social parameter
-                * w : float
-                    inertia parameter
-                if used with the :code:`Ring`, :code:`VonNeumann` or
-                :code:`Random` topology the additional parameter k must be
-                included
-                * k : int
-                    number of neighbors to be considered. Must be a positive
-                    integer less than :code:`n_particles`
-                if used with the :code:`Ring` topology the additional
-                parameters k and p must be included
-                * p: int {1,2}
-                    the Minkowski p-norm to use. 1 is the sum-of-absolute
-                    values (or L1 distance) while 2 is the Euclidean (or L2)
-                    distance.
-                if used with the :code:`VonNeumann` topology the additional
-                parameters p and r must be included
-                * r: int
-                    the range of the VonNeumann topology.  This is used to
-                    determine the number of neighbours in the topology.
-        topology : pyswarms.backend.topology.Topology
-            a :code:`Topology` object that defines the topology to use in the
-            optimization process. The currently available topologies are:
-                * Star
-                    All particles are connected
-                * Ring (static and dynamic)
-                    Particles are connected to the k nearest neighbours
-                * VonNeumann
-                    Particles are connected in a VonNeumann topology
-                * Pyramid (static and dynamic)
-                    Particles are connected in N-dimensional simplices
-                * Random (static and dynamic)
-                    Particles are connected to k random particles
-                Static variants of the topologies remain with the same
-                neighbours over the course of the optimization. Dynamic
-                variants calculate new neighbours every time step.
-        bounds : tuple of numpy.ndarray
-            a tuple of size 2 where the first entry is the minimum bound while
-            the second entry is the maximum bound. Each array must be of shape
-            :code:`(dimensions,)`.
-        bh_strategy : str
-            a strategy for the handling of out-of-bounds particles.
-        velocity_clamp : tuple, optional
-            a tuple of size 2 where the first entry is the minimum velocity and
-            the second entry is the maximum velocity. It sets the limits for
-            velocity clamping.
-        vh_strategy : str
-            a strategy for the handling of the velocity of out-of-bounds particles.
-        center : numpy.ndarray or float, optional
-            controls the mean or center whenever the swarm is generated randomly.
-            Default is :code:`1`
-        ftol : float
-            relative error in objective_func(best_pos) acceptable for
-            convergence. Default is :code:`-np.inf`
-        ftol_iter : int
-            number of iterations over which the relative error in
-            objective_func(best_pos) is acceptable for convergence.
-            Default is :code:`1`
-        init_pos : numpy.ndarray, optional
-            option to explicitly set the particles' initial positions. Set to
-            :code:`None` if you wish to generate the particles randomly.
+        Args:
+            n_particles (int): number of particles in the swarm.
+            dimensions (int): number of dimensions in the solution space.
+            apso_options (APSOOptions): APSO Options, specifies the initial inertia w, acceleration coef c_i, and elitist learning rate bound sigma.
+            bounds (Tuple[np.ndarray, np.ndarray]): A tuple of 2 np.ndarray, where the first entry is the minimum bound for the solution and the second entry is the maximum bound for the solution. Each np.ndarray has shape (dimensions).
+            acc_strategy (AccelerationStrategy, optional): The acceleration strategy used to update acceleration coef c_i. Defaults to BasicAccelerationStrategy().
+            bh_strategy (str, optional): The strategy used to handle out-of-bounds particles. Defaults to "periodic".
+            velocity_clamp (Optional[Tuple[float, float]], optional): A Tuple of size 2, where the first entry is the minimum velocity and the second entry is the maximm velocity. Defaults to None.
+            vh_strategy (str, optional): The strategy used to handle the velocity of out-of-bound particles. Defaults to "unmodified".
+            center (Union[np.ndarray, float], optional): Controls the mean or center whenever the swarm is generated randomly. Defaults to 1.00.
+            ftol (float, optional): relative error in objective_func(best_pos) to be accepted for convergence. Defaults to -np.inf.
+            ftol_iter (int, optional): number of iterations over which the relative error in objective_func(best_pos) is acceptable for convergence. Defaults to 1.
+            init_pos (Optional[np.ndarray], optional): (n_particles, dimensions) option to explicitly set the particles' initial positions. Defaults to None.
         """
         super(AdaptiveOptimizerPSO, self).__init__(
             n_particles=n_particles,
@@ -138,26 +78,15 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
                  **kwargs) -> Tuple[float, np.ndarray]:
         """Optimize the swarm for a number of iterations
 
-        Performs the optimization to evaluate the objective
-        function :code:`f` for a number of iterations :code:`iter.`
+        Args:
+            objective_func (Callable[[np.ndarray], np.ndarray]): The objective function to be evaluated. The function should take one np.ndarray of shape (n_particles, n_dimensions) as input and returns an np.ndarray (n_particles, ).
+            iters (int): Maximum number of iterations allowed.
+            n_processes (Optional[int], optional): Number of processes to be used for parallel particle evaluation. Defaults to None.
+            verbose (bool, optional): Enable or disable the logs and progress bar. Defaults to True.
 
-        Parameters
-        ----------
-        objective_func : Callable[[np.ndarray],np.ndarray]
-            objective function to be evaluated. takes an ndarray of shape (n_particles, n_dimensions) and returns an ndarray (n_particles, )
-        iters : int
-            number of iterations/generations
-        n_processes : int
-            number of processes to use for parallel particle evaluation (default: None = no parallelization)
-        verbose : bool
-            enable or disable the logs and progress bar (default: True = enable logs)
-        kwargs : dict
-            arguments for the objective function
-
-        Returns
-        -------
-        tuple
-            the global best cost and the global best position.
+        Returns:
+            float: global best cost.
+            np.ndarray: (dimensions) the global best position found.
         """
         # Apply verbosity
         log_level: int
