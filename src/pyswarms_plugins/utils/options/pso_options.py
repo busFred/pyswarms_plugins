@@ -2,6 +2,8 @@ from dataclasses import dataclass
 import dataclasses
 from typing import Dict, Optional, Union
 
+__all__ = ["PSOOptions", "GeneralOptimizerPSOOptions"]
+__author__ = "Hung-Tien Huang"
 
 @dataclass
 class PSOOptions:
