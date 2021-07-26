@@ -3,12 +3,13 @@ import math
 import multiprocessing as mp
 from collections import deque
 from multiprocessing.pool import Pool
-from typing import Callable, Deque, Optional, Tuple, Union
+from typing import Callable, Deque, List, Optional, Tuple, Union
 
 import numpy as np
 from pyswarms.backend.operators import (compute_objective_function,
                                         compute_pbest)
 from pyswarms.single import GlobalBestPSO
+from pyswarms.utils.reporter.reporter import Reporter
 
 from ....backend.operators import compute_particle_mean_distances
 from .evolution_state import EvolutionState
@@ -21,6 +22,7 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
     state: EvolutionState
     acc_strategy: AccelerationStrategy
     apso_options: APSOOptions
+    state_history: List[EvolutionState]
 
     def __init__(
         self,
@@ -67,8 +69,11 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
             ftol_iter=ftol_iter,
             init_pos=init_pos,
         )
+        # Initialize logger
+        self.rep = Reporter(logger=logging.getLogger(__name__))
         self.acc_strategy = acc_strategy
         self.apso_options = apso_options
+        self.name = __name__
 
     def optimize(self,
                  objective_func: Callable[[np.ndarray], np.ndarray],
@@ -129,7 +134,7 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
                 self.swarm, **self.options)
             # Print to console
             if verbose:
-                self.rep.hook(best_cost=self.swarm.best_cost)
+                self.rep.hook(best_cost=self.swarm.best_cost, state=self.state)
             hist = self.ToHistory(
                 best_cost=self.swarm.best_cost,
                 mean_pbest_cost=np.mean(self.swarm.pbest_cost),
@@ -177,6 +182,24 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
     def reset(self):
         super().reset()
         self.state = EvolutionState.S1_EXPLORATION
+        self.state_history = list()
+
+    def _populate_history(self, hist: "ToHistory"):
+        """Populate all history lists
+
+        The :code:`cost_history`, :code:`mean_pbest_history`, and
+        :code:`neighborhood_best` is expected to have a shape of
+        :code:`(iters,)`,on the other hand, the :code:`pos_history`
+        and :code:`velocity_history` are expected to have a shape of
+        :code:`(iters, n_particles, dimensions)`
+
+        Parameters
+        ----------
+        hist : collections.namedtuple
+            Must be of the same type as self.ToHistory
+        """
+        super()._populate_history(hist=hist)
+        self.state_history.append(self.state)
 
     def __perform_ese(self):
         mean_distances: np.ndarray = compute_particle_mean_distances(self.swarm)
