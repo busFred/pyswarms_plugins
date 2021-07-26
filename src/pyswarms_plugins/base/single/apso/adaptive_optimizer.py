@@ -76,7 +76,9 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
                  n_processes: Optional[int] = None,
                  verbose: bool = True,
                  **kwargs) -> Tuple[float, np.ndarray]:
-        """Optimize the swarm for a number of iterations
+        """Optimize the swarm for a number of iterations.
+
+        In the original paper, iteration is termed generation.
 
         Args:
             objective_func (Callable[[np.ndarray], np.ndarray]): The objective function to be evaluated. The function should take one np.ndarray of shape (n_particles, n_dimensions) as input and returns an np.ndarray (n_particles, ).
