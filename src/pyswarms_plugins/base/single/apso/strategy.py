@@ -4,7 +4,8 @@ from typing import Optional, Tuple
 import numpy as np
 
 __all__ = ["AccelerationStrategy", "BasicAccelerationStrategy"]
-
+__author__ = "Hung-Tien Huang"
+__contact__ = "hungtienhuang@gmail.com"
 
 class AccelerationStrategy(ABC):
 

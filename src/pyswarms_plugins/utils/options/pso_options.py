@@ -4,6 +4,8 @@ from typing import Dict, Optional, Union
 
 __all__ = ["PSOOptions", "GeneralOptimizerPSOOptions"]
 __author__ = "Hung-Tien Huang"
+__contact__ = "hungtienhuang@gmail.com"
+
 
 @dataclass
 class PSOOptions:

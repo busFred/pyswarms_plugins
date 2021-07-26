@@ -2,6 +2,9 @@ from dataclasses import dataclass
 import dataclasses
 from ....utils.options.pso_options import PSOOptions
 
+__all__ = ["APSOOptions"]
+__author__ = "Hung-Tien Huang"
+__contact__ = "hungtienhuang@gmail.com"
 
 @dataclass
 class APSOOptions(PSOOptions):

@@ -3,6 +3,8 @@ from enum import Enum
 import numpy as np
 
 __all__ = ["EvolutionState"]
+__author__ = "Hung-Tien Huang"
+__contact__ = "hungtienhuang@gmail.com"
 
 
 class EvolutionState(Enum):

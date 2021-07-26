@@ -16,6 +16,9 @@ from .evolution_state import EvolutionState
 from .strategy import AccelerationStrategy, BasicAccelerationStrategy
 from .apso_options import APSOOptions
 
+__all__ = ["AdaptiveOptimizerPSO"]
+__author__ = "Hung-Tien Huang"
+__contact__ = "hungtienhuang@gmail.com"
 
 class AdaptiveOptimizerPSO(GlobalBestPSO):
     bounds: Tuple[np.ndarray, np.ndarray]  # super allows none but APSO does not
@@ -40,6 +43,9 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         init_pos: Optional[np.ndarray] = None,
     ):
         """Adaptive Particle Swarm Optimization.
+        
+        Implement based on:
+        Z. Zhan, J. Zhang, Y. Li and H. S. Chung, "Adaptive Particle Swarm Optimization," in IEEE Transactions on Systems, Man, and Cybernetics, Part B (Cybernetics), vol. 39, no. 6, pp. 1362-1381, Dec. 2009, doi: 10.1109/TSMCB.2009.2015956.
 
         Args:
             n_particles (int): number of particles in the swarm.
