@@ -20,8 +20,10 @@ __all__ = ["AdaptiveOptimizerPSO"]
 __author__ = "Hung-Tien Huang"
 __contact__ = "hungtienhuang@gmail.com"
 
+
 class AdaptiveOptimizerPSO(GlobalBestPSO):
-    bounds: Tuple[np.ndarray, np.ndarray]  # super allows none but APSO does not
+    bounds: Tuple[np.ndarray,
+                  np.ndarray]  # super allows none but APSO does not
     state: EvolutionState
     acc_strategy: AccelerationStrategy
     apso_options: APSOOptions
@@ -127,10 +129,8 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         for i in self.rep.pbar(iters, self.name) if verbose else range(iters):
             # Compute cost for current position and personal best
             # fmt: off
-            self.swarm.current_cost = compute_objective_function(self.swarm,
-                                                                 objective_func,
-                                                                 pool=pool,
-                                                                 **kwargs)
+            self.swarm.current_cost = compute_objective_function(
+                self.swarm, objective_func, pool=pool, **kwargs)
             self.swarm.pbest_pos, self.swarm.pbest_cost = compute_pbest(
                 self.swarm)
             best_cost_yet_found = self.swarm.best_cost
@@ -208,7 +208,8 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
         self.state_history.append(self.state)
 
     def __perform_ese(self):
-        mean_distances: np.ndarray = compute_particle_mean_distances(self.swarm)
+        mean_distances: np.ndarray = compute_particle_mean_distances(
+            self.swarm)
         evo_factor: float = self.__compute_evolutionary_factor(
             mean_distances=mean_distances)
         state_numeric: np.ndarray = self.__compute_state_numeric(
@@ -310,7 +311,7 @@ class AdaptiveOptimizerPSO(GlobalBestPSO):
 
     def __perform_els(self, objective_func: Callable[[np.ndarray], np.ndarray],
                       curr_iter: int, max_iter: int):
-        mod_dim: int = int(np.random.uniform(1, self.dimensions))
+        mod_dim: int = np.random.randint(0, self.dimensions)
         mod_pos: np.ndarray = self.swarm.best_pos.copy()
         x_min_d: float = self.bounds[0][mod_dim]
         x_max_d: float = self.bounds[1][mod_dim]
